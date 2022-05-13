@@ -15,6 +15,7 @@ class details:
         self.pattern = pat
         self.monitoredChannel = monitored
         self.replaceChar = replace
+        self.number = 0
 
 deets = details("", None, "#")
 
@@ -25,17 +26,25 @@ bot = commands.Bot(PREFIX)
 @bot.command(name='pattern', help="Sets the pattern for the selected channel")
 async def pattern(ctx, *pat: str):
     pat = str.join(' ', pat)
-    pattern = pat
+    deets.pattern = pat
     print("Setting pattern")
+    await showpattern(ctx)
     print("\t", pattern)
 
 @bot.command(name="setchannel", help="Set the bot's monitored channel to the current channel of the invoking user")
 async def setchannel(ctx):
     deets.monitoredChannel = ctx.author.voice.channel
+    deets.number = getNumUsers(deets.monitoredChannel)
     print("Setting channel")
     print("\t", ctx.message.author)
     print("\t", ctx.author.voice.channel)
     print("\t", deets.monitoredChannel)
+    print("\tMembers connected: ", deets.number)
+
+@bot.command(name="showpattern", help="Sends a message showing the current pattern")
+async def showpattern(ctx):
+    await ctx.send(f'The current pattern is "{deets.pattern}"')
+    # print("hello")
 
 @bot.command(name='join', help="Join the voice channel the sending user is in")
 async def join(ctx):
@@ -86,26 +95,25 @@ async def on_voice_state_update(member, before, after):
         print("\tmonitoredChannel is null")
     elif (after.channel == deets.monitoredChannel):
         print("\tincrease number")
+        deets.number += 1
     elif (before.channel == deets.monitoredChannel):
         print("\tdecrease number")
+        deets.number -= 1
     else:
         print("\thit the else")
+    print("\tdeets.number: ", deets.number)
+    await updateChannelName()
 
 
 # UTILS
-async def getNumUsers():
-    # get channel
-    # get size of members property
-    # https://stackoverflow.com/questions/66778544/get-count-of-users-in-a-voice-channel-discord-js
-    for c in bot.get_all_channels:
-        if c.id == deets.monitoredChannel.id:
-            print("idk")
-    print("not implemented")
+def getNumUsers(channel):
+    return len(channel.members)
 
 
-def updateChannelName():
-    numUsers = getNumUsers()
+async def updateChannelName():
+    numUsers = deets.number
     update = pattern.replace(deets.replaceChar, str(numUsers))
+    await deets.monitoredChannel.edit(name=update)
     # update channel name here
 
 
