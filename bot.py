@@ -4,7 +4,7 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 import persistBot
-import details
+from details import Details
 
 load_dotenv()
 
@@ -12,33 +12,33 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 JSON_FILE = os.getenv('JSON_FILE')
 
-deets = details("", None, "#", '-')
+# deets = Details("", None, "#", '-')
 
-bot = persistBot.PersistBot(JSON_FILE, deets.prefix)
+bot = persistBot.PersistBot(JSON_FILE)
 
 
 # COMMANDS
 @bot.command(name='pattern', help="Sets the pattern for the selected channel")
 async def pattern(ctx, *pat: str):
     pat = str.join(' ', pat)
-    deets.pattern = pat
+    bot.details.pattern = pat
     print("Setting pattern")
     await showpattern(ctx)
     print("\t", pattern)
 
 @bot.command(name="setchannel", help="Set the bot's monitored channel to the current channel of the invoking user")
 async def setchannel(ctx):
-    deets.monitoredChannel = ctx.author.voice.channel
-    deets.number = getNumUsers(deets.monitoredChannel)
+    bot.details.monitoredChannel = ctx.author.voice.channel
+    bot.details.number = getNumUsers(bot.details.monitoredChannel)
     print("Setting channel")
     print("\t", ctx.message.author)
     print("\t", ctx.author.voice.channel)
-    print("\t", deets.monitoredChannel)
-    print("\tMembers connected: ", deets.number)
+    print("\t", bot.details.monitoredChannel)
+    print("\tMembers connected: ", bot.details.number)
 
 @bot.command(name="showpattern", help="Sends a message showing the current pattern")
 async def showpattern(ctx):
-    await ctx.send(f'The current pattern is "{deets.pattern}"')
+    await ctx.send(f'The current pattern is "{bot.details.pattern}"')
     # print("hello")
 
 @bot.command(name='join', help="Join the voice channel the sending user is in")
@@ -85,18 +85,18 @@ async def on_voice_state_update(member, before, after):
     print("\t", member)
     print("\tbefore.channel: ", before.channel)
     print("\tafter.channel: ", after.channel)
-    print("\tmonitoredChannel: ", deets.monitoredChannel)
+    print("\tmonitoredChannel: ", bot.details.monitoredChannel)
     if (deets.monitoredChannel == None):
         print("\tmonitoredChannel is null")
-    elif (after.channel == deets.monitoredChannel):
+    elif (after.channel == bot.details.monitoredChannel):
         print("\tincrease number")
         deets.number += 1
-    elif (before.channel == deets.monitoredChannel):
+    elif (before.channel == bot.details.monitoredChannel):
         print("\tdecrease number")
         deets.number -= 1
     else:
         print("\thit the else")
-    print("\tdeets.number: ", deets.number)
+    print("\tdeets.number: ", bot.details.number)
     await updateChannelName()
 
 
@@ -106,9 +106,9 @@ def getNumUsers(channel):
 
 
 async def updateChannelName():
-    numUsers = deets.number
-    update = pattern.replace(deets.replaceChar, str(numUsers))
-    await deets.monitoredChannel.edit(name=update)
+    numUsers = bot.details.number
+    update = pattern.replace(bot.details.replaceChar, str(numUsers))
+    await bot.details.monitoredChannel.edit(name=update)
     # update channel name here
 
 

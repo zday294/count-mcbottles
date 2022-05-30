@@ -1,9 +1,9 @@
-FROM python:3.10.4
+FROM python:3.10
 
 COPY ./ /app
 WORKDIR /app
 
-RUN python3 -m pip install -U python-dotenv
-RUN python3 -m pip install -U discord.py
+RUN pip3 install -U python-dotenv
+RUN pip3 install discord.py
 
 CMD python3 bot.py
