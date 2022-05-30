@@ -86,14 +86,14 @@ async def on_voice_state_update(member, before, after):
     print("\tbefore.channel: ", before.channel)
     print("\tafter.channel: ", after.channel)
     print("\tmonitoredChannel: ", bot.details.monitoredChannel)
-    if (deets.monitoredChannel == None):
+    if (bot.details.monitoredChannel == None):
         print("\tmonitoredChannel is null")
     elif (after.channel == bot.details.monitoredChannel):
         print("\tincrease number")
-        deets.number += 1
+        bot.details.number += 1
     elif (before.channel == bot.details.monitoredChannel):
         print("\tdecrease number")
-        deets.number -= 1
+        bot.details.number -= 1
     else:
         print("\thit the else")
     print("\tdeets.number: ", bot.details.number)
