@@ -3,23 +3,18 @@ import os
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+import persistBot
+import details
 
 load_dotenv()
 
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
-PREFIX = '-'
+JSON_FILE = os.getenv('JSON_FILE')
 
-class details:
-    def __init__(self, pat, monitored, replace):
-        self.pattern = pat
-        self.monitoredChannel = monitored
-        self.replaceChar = replace
-        self.number = 0
+deets = details("", None, "#", '-')
 
-deets = details("", None, "#")
-
-bot = commands.Bot(PREFIX)
+bot = persistBot.PersistBot(JSON_FILE, deets.prefix)
 
 
 # COMMANDS

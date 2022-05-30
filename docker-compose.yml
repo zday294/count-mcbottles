@@ -1,0 +1,5 @@
+# dockercompose.yml
+
+services:
+  app:
+    build: .
